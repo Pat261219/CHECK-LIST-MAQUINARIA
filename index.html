@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-List Recepción de Maquinaria - Grupo TRAGSA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tragsa: {
+                            50: '#f0fdf4',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            dark: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf para exportar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Corporativo -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-4">
+                <!-- Logo Vectorial Exacto Grupo TRAGSA -->
+                <div class="bg-white px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2">
+                    <svg class="h-8 w-auto" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Hoja Verde Superior -->
+                        <path d="M 60 10 C 25 10 10 40 10 65 L 60 65 Z" fill="#78B82A" />
+                        <!-- Hoja Verde Oscuro Derecha -->
+                        <path d="M 60 10 C 70 30 65 50 60 65 L 75 65 C 75 40 70 20 60 10 Z" fill="#007A33" />
+                        <!-- Forma Azul Inferior -->
+                        <path d="M 10 65 C 10 85
