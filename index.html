@@ -1,272 +1,322 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-List Recepción de Maquinaria - Grupo TRAGSA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        @media print {
-            body { background: white !important; }
-            header { display: none !important; }
-            .no-print { display: none !important; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checklist Maquinaria | Seguridad en Obra - Grupo TRAGSA</title>
+<style>
+:root{--navy:#15324b;--blue:#245b82;--bg:#f2f5f8;--line:#d9e1e8;--muted:#637487;--red:#a73535;--green:#23633b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px Arial,sans-serif;color:#1d2a36}
+header{background:var(--navy);color:white;padding:20px max(18px,calc((100% - 1100px)/2))}
+header h1{margin:0;font-size:23px;letter-spacing:.4px;color:white}
+header p{margin:6px 0 0;color:#d7e4ee}
+main{max-width:1100px;margin:22px auto;padding:0 14px}
+.toolbar,.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:17px;margin-bottom:16px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button,.btn{border:0;border-radius:8px;padding:11px 15px;background:var(--blue);color:white;font-weight:600;cursor:pointer}
+button.secondary{background:#e8eef3;color:var(--navy)}button.danger{background:var(--red)}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5df;border-radius:7px;font:inherit;background:#fff}
+textarea{min-height:75px;resize:vertical}label{display:block;font-weight:600;font-size:13px;color:#405366;margin:10px 0 5px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}
+h2{font-size:19px;margin:0 0 12px;color:var(--navy)}h3{font-size:16px;color:var(--navy);margin:14px 0 6px;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.item{border-top:1px solid var(--line);padding:12px 0}.item:first-of-type{border-top:0}
+.photos{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.photo-card{position:relative;width:100px;height:75px;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#000}
+.photos img{width:100%;height:100%;object-fit:cover}
+.photo-card button{position:absolute;top:1px;right:1px;background:rgba(167,53,53,0.9);color:white;border:0;border-radius:3px;padding:1px 4px;font-size:9px;cursor:pointer}
+.doc-list{margin-top:8px;font-size:13px}.doc-item{display:flex;align-items:center;gap:8px;padding:6px;background:#f8fafc;border:1px solid var(--line);border-radius:6px;margin-bottom:4px}
+.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}
+#savedList button{margin:4px}.status{font-size:12px;color:var(--green);font-weight:bold}
+.card-row{background:#fafbfc;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px}
+.gps-line{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.gps-line>div{flex:1;min-width:140px}.gps-line button{white-space:nowrap}
+a{color:var(--blue)}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar{align-items:stretch}.toolbar button{flex:1}.gps-line button{width:100%}}
+@media print{
+ body{background:white;font-size:11px}header{padding:12px;color:#000;background:white;border-bottom:2px solid #15324b}header p{color:#333}
+ main{max-width:none;margin:0;padding:0}.toolbar,.no-print,.removePhoto,.btn-del{display:none!important}
+ .panel{border:0;padding:6px;margin:0;break-inside:auto}.item,.card-row{break-inside:avoid}
+ .photo-card{width:120px;height:90px;border:1px solid #ccc}
+ input,select,textarea{border:0;padding:2px 0;appearance:none;font-size:11px}
+ textarea{min-height:25px}h2,h3{break-after:avoid}a{color:#000;text-decoration:none}
+}
+</style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+<body>
+<header>
+<h1>CHECKLIST MAQUINARIA</h1>
+<p>Inspección de Seguridad y Equipos · Grupo TRAGSA</p>
+</header>
+<main>
+<div class="toolbar no-print">
+<button type="button" onclick="newInspection()">Nuevo checklist</button>
+<button type="button" class="secondary" onclick="saveInspection()">Guardar en este dispositivo</button>
+<button type="button" class="secondary" onclick="window.print()">Generar / guardar PDF</button>
+<button type="button" class="secondary" onclick="showSaved()">Checklists guardados</button>
+<span id="msg" class="status"></span>
+</div>
+<section class="panel" id="savedPanel" hidden><h2>Checklists guardados en este dispositivo</h2><div id="savedList"></div><p class="small">Cada dispositivo almacena sus propios registros de forma independiente y segura.</p></section>
+<form id="inspection">
 
-    <!-- Header Web (Oculto al exportar PDF) -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 no-print">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white px-3 py-1.5 rounded shadow flex items-center">
-                    <svg class="h-8 w-auto" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M 50 5 C 20 5 8 30 8 50 L 45 50 Z" fill="#8cc63f" />
-                        <path d="M 50 5 C 58 20 55 38 50 50 L 62 50 C 62 30 58 15 50 5 Z" fill="#006837" />
-                        <path d="M 8 50 C 8 68 25 78 50 78 C 50 65 42 55 8 50 Z" fill="#0054a6" />
-                        <path d="M 2 40 L 68 34 L 66 44 L 2 44 Z" fill="#f37021" />
-                        <text x="72" y="42" font-family="Arial" font-size="20" fill="#888">Grupo</text>
-                        <text x="123" y="42" font-family="Arial" font-size="20" font-weight="bold" fill="#333">Tragsa</text>
-                    </svg>
-                </div>
-                <h1 class="text-sm font-bold">PLANTILLA OFICIAL - CHECK-LIST MAQUINARIA</h1>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="guardarBorrador()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded border border-slate-700 flex items-center gap-1">
-                    <i class="fa-solid fa-floppy-disk text-emerald-400"></i> Guardar
-                </button>
-                <button onclick="generarPDF()" class="bg-red-700 hover:bg-red-800 text-xs text-white px-3 py-2 rounded flex items-center gap-1 font-bold">
-                    <i class="fa-solid fa-file-pdf"></i> Exportar PDF
-                </button>
-            </div>
-        </div>
-    </header>
+<!-- 1. DATOS IDENTIFICATIVOS -->
+<section class="panel"><h2>1. Datos identificativos de la inspección</h2><div class="grid">
+<div><label>Código de obra</label><input name="codigo" placeholder="Ej. 86661"></div>
+<div><label>Nombre de la obra / actuación</label><input name="obra" placeholder="Nombre completo"></div>
+<div><label>Técnico / Operador responsable</label><input name="tecnico" placeholder="Nombre del responsable"></div>
+<div><label>Fecha de revisión</label><input name="fechaFirma" type="date"></div>
+<div class="full"><label>Ubicación (Monte, Paraje, PK)</label><input name="ubicacion" placeholder="Lugar exacto de la revisión"></div>
+<div class="full"><label>Ubicación GPS</label><div class="gps-line">
+<div><label>Latitud</label><input name="gpsLat" id="gpsLat" placeholder="Ej. 42.5987"></div>
+<div><label>Longitud</label><input name="gpsLon" id="gpsLon" placeholder="-5.5671"></div>
+<button type="button" class="no-print" onclick="getGPS()">Obtener GPS</button>
+</div><p class="small" id="gpsStatus">Pulsa para capturar la posición actual del dispositivo.</p><p id="mapLink" class="small"></p></div>
+</div></section>
 
-    <!-- Contenedor Principal (Estructura PDF Oficial Tragsa) -->
-    <main class="max-w-4xl w-full mx-auto px-2 py-6 flex-grow">
-        <form id="checklistForm" class="bg-white p-6 rounded shadow-sm border border-slate-300 space-y-4">
-            
-            <!-- Cabecera Oficial del Documento -->
-            <div class="border-2 border-slate-900 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
-                <div class="flex items-center gap-4">
-                    <svg class="h-12 w-auto" viewBox="0 0 180 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M 50 5 C 20 5 8 30 8 50 L 45 50 Z" fill="#8cc63f" />
-                        <path d="M 50 5 C 58 20 55 38 50 50 L 62 50 C 62 30 58 15 50 5 Z" fill="#006837" />
-                        <path d="M 8 50 C 8 68 25 78 50 78 C 50 65 42 55 8 50 Z" fill="#0054a6" />
-                        <path d="M 2 40 L 68 34 L 66 44 L 2 44 Z" fill="#f37021" />
-                        <text x="72" y="42" font-family="Arial" font-size="20" fill="#888">Grupo</text>
-                        <text x="123" y="42" font-family="Arial" font-size="20" font-weight="bold" fill="#333">Tragsa</text>
-                    </svg>
-                    <div>
-                        <h2 class="text-xl font-black uppercase text-slate-900 tracking-tight">Check-List Recepción de Maquinaria</h2>
-                        <p class="text-xs text-slate-600 font-bold">SISTEMA DE GESTIÓN DE PREVENCIÓN DE RIESGOS LABORALES</p>
-                    </div>
-                </div>
-                <div class="text-right border-l-2 border-slate-900 pl-4">
-                    <span class="block text-[10px] font-bold text-slate-500 uppercase">Código / Referencia</span>
-                    <span class="text-sm font-mono font-bold text-slate-900">MOD-PRL-MAQ</span>
-                </div>
-            </div>
+<!-- 2. FICHAS DE MAQUINARIA AUTOPROPULSADA -->
+<section class="panel"><h2>2. Fichas de maquinaria autopropulsada</h2>
+<p class="small">Completa el estado de seguridad de cada máquina autopropulsada presente en la obra.</p>
+<div id="autoMachinery"></div>
+<button type="button" class="secondary no-print" onclick="addAutoMachine()">+ Añadir ficha de maquinaria</button>
+</section>
 
-            <!-- Datos Identificativos (Bloque Fijo Calcado) -->
-            <div class="border border-slate-900 p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white">
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Tipo de Máquina</span>
-                    <input type="text" id="tipoMaquina" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: Mixta">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Nº Tragsa</span>
-                    <input type="text" id="numTragsa" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: 85182">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Marca / Modelo</span>
-                    <input type="text" id="marcaModelo" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: Hidromek 102B">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Nº Bastidor</span>
-                    <input type="text" id="numBastidor" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: HE 2 B 180133">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Cuentahoras (h)</span>
-                    <input type="number" id="cuentahoras" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: 9937">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Matrícula</span>
-                    <input type="text" id="matricula" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: E-9980-BHS">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Procedencia</span>
-                    <input type="text" id="procedencia" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: Valdespino">
-                </div>
-                <div class="border p-2 bg-slate-50">
-                    <span class="block font-bold text-slate-700 text-[10px] uppercase">Obra Destino</span>
-                    <input type="text" id="obraDestino" class="w-full bg-white border border-slate-300 p-1 rounded font-medium mt-1" placeholder="Ej: Torre del Bierzo">
-                </div>
-            </div>
+<!-- 3. DOCUMENTOS ADJUNTOS (PDFs) -->
+<section class="panel"><h2>3. Documentos adjuntos (PDFs)</h2>
+<p class="small">Incorpora manuales o fichas técnicas en PDF complementarias.</p>
+<input class="no-print" type="file" accept="application/pdf" multiple onchange="addPDFs(this)">
+<div id="pdfList" class="doc-list"></div>
+</section>
 
-            <!-- Tabla de Chequeo Oficial -->
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse border border-slate-900 text-xs">
-                    <thead>
-                        <tr class="bg-slate-800 text-white font-bold uppercase text-center">
-                            <th class="p-2 border border-slate-700 text-left w-2/5">Concepto a Chequear</th>
-                            <th class="p-2 border border-slate-700 w-1/5">Estado (Correcto / Incorrecto / N/A)</th>
-                            <th class="p-2 border border-slate-700 w-2/5 text-left">Observaciones / Foto</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaChequeo" class="divide-y divide-slate-300"></tbody>
-                </table>
-            </div>
+<!-- 4. OBSERVACIONES Y FIRMA -->
+<section class="panel"><h2>4. Observaciones y conclusión</h2>
+<label>Observaciones generales</label><textarea name="conclusiones" style="min-height:90px;"></textarea>
+</section>
 
-            <!-- Observaciones Generales -->
-            <div class="border border-slate-900 p-3 bg-slate-50 space-y-1">
-                <label class="block font-bold text-xs uppercase text-slate-800">Observaciones Generales:</label>
-                <textarea id="observacionesGenerales" rows="2" class="w-full text-xs border border-slate-300 p-2 rounded bg-white focus:outline-none" placeholder="Indique incidencias o anotaciones relevantes..."></textarea>
-            </div>
+</form>
+</main>
 
-            <!-- Bloque de Firmas y Fechas Exacto -->
-            <div class="border border-slate-900 p-4 space-y-4 bg-slate-50">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold">En (Lugar):</span>
-                        <input type="text" id="lugarFirma" class="flex-grow border border-slate-300 p-1.5 rounded bg-white font-medium" placeholder="Ej: TORRE DEL BIERZO">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold">Fecha:</span>
-                        <input type="text" id="fechaFirma" class="flex-grow border border-slate-300 p-1.5 rounded bg-white font-medium" placeholder="Ej: 30 de Septiembre de 2026">
-                    </div>
-                </div>
+<script>
+function addAutoMachine(data={}){
+  const box=document.getElementById('autoMachinery');
+  const rnd=Math.random().toString(36).substring(2,7);
+  const pId=data.photoBoxId||('am_photos_'+rnd);
+  const d=document.createElement('div');
+  d.className='card-row auto-m-card';
+  d.innerHTML=`
+  <h3>Identificación de la Máquina</h3>
+  <div class="grid">
+    <div><label>Tipo de máquina</label><input class="am-type" placeholder="Ej. Retropala, Dumper, Tractor" value="${data.type||''}"></div>
+    <div><label>Marca / Modelo</label><input class="am-model" value="${data.model||''}"></div>
+    <div><label>Matrícula / Nº Identificación</label><input class="am-id" value="${data.id||''}"></div>
+    <div><label>Estado general operativo</label><select class="am-status"><option value="">Seleccionar</option><option ${data.status==='SÍ'?'selected':''}>SÍ</option><option ${data.status==='NO'?'selected':''}>NO</option><option ${data.status==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+  </div>
+  <h3>Puntos de control de seguridad</h3>
+  <div class="grid">
+    <div><label>Cabina de seguridad (ROPS/FOPS)</label><select class="am-cabina"><option value="">Seleccionar</option><option ${data.cabina==='SÍ'?'selected':''}>SÍ</option><option ${data.cabina==='NO'?'selected':''}>NO</option><option ${data.cabina==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Estado cabina / cristales / puertas</label><select class="am-est-cabina"><option value="">Seleccionar</option><option ${data.estCabina==='SÍ'?'selected':''}>SÍ</option><option ${data.estCabina==='NO'?'selected':''}>NO</option><option ${data.estCabina==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Instrumentos de control / cuadro</label><select class="am-cuadro"><option value="">Seleccionar</option><option ${data.cuadro==='SÍ'?'selected':''}>SÍ</option><option ${data.cuadro==='NO'?'selected':''}>NO</option><option ${data.cuadro==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Bocina y avisadores</label><select class="am-bocina"><option value="">Seleccionar</option><option ${data.bocina==='SÍ'?'selected':''}>SÍ</option><option ${data.bocina==='NO'?'selected':''}>NO</option><option ${data.bocina==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Estado de neumáticos / cadenas</label><select class="am-ruedas"><option value="">Seleccionar</option><option ${data.ruedas==='SÍ'?'selected':''}>SÍ</option><option ${data.ruedas==='NO'?'selected':''}>NO</option><option ${data.ruedas==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Nivel de ruido / aislamiento</label><select class="am-ruido"><option value="">Seleccionar</option><option ${data.ruido==='SÍ'?'selected':''}>SÍ</option><option ${data.ruido==='NO'?'selected':''}>NO</option><option ${data.ruido==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Cinturón de seguridad</label><select class="am-cinturon"><option value="">Seleccionar</option><option ${data.cinturon==='SÍ'?'selected':''}>SÍ</option><option ${data.cinturon==='NO'?'selected':''}>NO</option><option ${data.cinturon==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Señal acústica de marcha atrás</label><select class="am-acustica"><option value="">Seleccionar</option><option ${data.acustica==='SÍ'?'selected':''}>SÍ</option><option ${data.acustica==='NO'?'selected':''}>NO</option><option ${data.acustica==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Iluminación / Faros de trabajo</label><select class="am-luces"><option value="">Seleccionar</option><option ${data.luces==='SÍ'?'selected':''}>SÍ</option><option ${data.luces==='NO'?'selected':''}>NO</option><option ${data.luces==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Extintor portátil operativo</label><select class="am-extintor"><option value="">Seleccionar</option><option ${data.extintor==='SÍ'?'selected':''}>SÍ</option><option ${data.extintor==='NO'?'selected':''}>NO</option><option ${data.extintor==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Botiquín de primeros auxilios</label><select class="am-botiquin"><option value="">Seleccionar</option><option ${data.botiquin==='SÍ'?'selected':''}>SÍ</option><option ${data.botiquin==='NO'?'selected':''}>NO</option><option ${data.botiquin==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+    <div><label>Manual de instrucciones disponible</label><select class="am-manual"><option value="">Seleccionar</option><option ${data.manual==='SÍ'?'selected':''}>SÍ</option><option ${data.manual==='NO'?'selected':''}>NO</option><option ${data.manual==='NO APLICA'?'selected':''}>NO APLICA</option></select></div>
+  </div>
+  <div class="full" style="margin-top:12px;">
+    <label>Fotografías de esta máquina</label>
+    <input class="no-print" type="file" accept="image/*" multiple style="max-width:260px;padding:4px;font-size:12px;" onchange="addPhotos(this, '${pId}')">
+    <div class="photos" id="${pId}"></div>
+  </div>
+  <div class="no-print" style="margin-top:10px;text-align:right;"><button type="button" class="danger" onclick="this.closest('.auto-m-card').remove()">Eliminar esta máquina</button></div>
+  `;
+  box.appendChild(d);
+  if(data.photos && data.photoBoxId){
+    const pBox=document.getElementById(data.photoBoxId);
+    if(pBox) data.photos.forEach(src=>{
+      const card=document.createElement('div');
+      card.className='photo-card';
+      card.innerHTML=`<img src="${src}"><button type="button" class="no-print" onclick="this.closest('.photo-card').remove()">X</button>`;
+      pBox.appendChild(card);
+    });
+  }
+}
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <div class="border border-slate-400 p-3 rounded bg-white">
-                        <span class="block font-bold text-[11px] uppercase text-slate-800 mb-2">Realiza el Check-list (TRAGSA)</span>
-                        <input type="text" id="realizaNombre" class="w-full text-xs border border-slate-300 p-1.5 rounded mb-1.5 font-medium" placeholder="Nombre y Apellidos">
-                        <input type="text" id="realizaDni" class="w-full text-xs border border-slate-300 p-1.5 rounded font-medium" placeholder="DNI / Nº Registro">
-                    </div>
-                    <div class="border border-slate-400 p-3 rounded bg-white">
-                        <span class="block font-bold text-[11px] uppercase text-slate-800 mb-2">Conforme con el Check-list</span>
-                        <input type="text" id="conformeNombre" class="w-full text-xs border border-slate-300 p-1.5 rounded mb-1.5 font-medium" placeholder="Nombre y Apellidos">
-                        <input type="text" id="conformeDni" class="w-full text-xs border border-slate-300 p-1.5 rounded font-medium" placeholder="DNI / Nº Registro">
-                    </div>
-                </div>
-            </div>
+function addPhotos(inp,id){
+  let box=document.getElementById(id);
+  if(!box){
+    box=document.createElement('div');
+    box.id=id;
+    box.className='photos';
+    inp.parentNode.appendChild(box);
+  }
+  [...inp.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const card=document.createElement('div');
+      card.className='photo-card';
+      card.innerHTML=`<img src="${r.result}"><button type="button" class="no-print" onclick="this.closest('.photo-card').remove()">X</button>`;
+      box.appendChild(card);
+    };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
 
-            <!-- Botón PDF Inferior -->
-            <div class="flex justify-end pt-2 no-print">
-                <button type="button" onclick="generarPDF()" class="bg-red-700 hover:bg-red-800 text-white font-bold px-6 py-2.5 rounded shadow transition flex items-center gap-2 text-xs">
-                    <i class="fa-solid fa-file-pdf text-base"></i> Exportar Check-List en PDF Oficial
-                </button>
-            </div>
-        </form>
-    </main>
+let loadedPDFs=[];
+function addPDFs(inp){
+  const list=document.getElementById('pdfList');
+  [...inp.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      loadedPDFs.push({name:f.name,data:r.result});
+      renderPDFList();
+    };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
+function renderPDFList(){
+  const list=document.getElementById('pdfList');
+  list.innerHTML='';
+  loadedPDFs.forEach((pdf,idx)=>{
+    const item=document.createElement('div');
+    item.className='doc-item';
+    item.innerHTML=`<span>📄 <strong>${pdf.name}</strong></span> <a href="${pdf.data}" target="_blank" class="no-print">Ver / Descargar</a> <button type="button" class="danger no-print btn-del" onclick="loadedPDFs.splice(${idx},1);renderPDFList();">Eliminar</button>`;
+    list.appendChild(item);
+  });
+}
 
-    <script>
-        // Estructura oficial exacta de elementos del documento Tragsa
-        const conceptos = [
-            "LUZ ROTATIVA",
-            "ESPEJOS RETROVISORES",
-            "ALARMA ACÚSTICA DE MARCHA ATRÁS",
-            "BOCINA - CLAXON",
-            "EMISORA",
-            "ASIENTO NEUMÁTICO",
-            "CINTURÓN DE SEGURIDAD",
-            "EXTINTOR",
-            "ESTADO INTERIOR DE LA CABINA",
-            "ESTADO DE LUNAS Y CRISTALES",
-            "GOLPES Y ABOLLADURAS",
-            "FUNCIONAMIENTO DE TODOS LOS TESTIGOS DEL CUADRO DE INSTRUMENTOS",
-            "FUNCIONAMIENTO DE TODOS LOS CONTROLES DE OPERACIÓN DE LA MÁQUINA",
-            "ESTADO DE LAS CUBIERTAS / ORUGAS / RUEDAS",
-            "FUNCIONAMIENTO DE LAS LUCES E INDICADORES",
-            "AIRE ACONDICIONADO / CLIMATIZADOR",
-            "DOCUMENTACIÓN MÁQUINA: MANUAL DEL OPERADOR",
-            "DOCUMENTACIÓN MÁQUINA: HOJA DE CONTROL DE ÚLTIMOS MANTENIMIENTOS",
-            "INEXISTENCIA DE PÉRDIDAS DE FLUIDOS EN MÁQUINA",
-            "NIVELES: NIVEL DE ACEITE MOTOR",
-            "NIVELES: NIVEL DE REFRIGERANTE",
-            "NIVELES: NIVEL DE ACEITE HIDRÁULICO",
-            "NIVELES: NIVEL DE LÍQUIDO DE TRANSMISIÓN",
-            "NIVELES: NIVEL DE LÍQUIDO DIRECCIÓN/GIRO",
-            "CAZO: MARCA / Nº SERIE",
-            "CAZO: MODELO / TIPO / CAPACIDAD",
-            "CAZO: CUCHILLA",
-            "CAZO: PROTECCIÓN DEL LABIO",
-            "CAZO: DIENTES",
-            "CAZO: SISTEMA DIENTES",
-            "CAZO: PROTECTOR DEL PORTADIENTES",
-            "CAZO: PROTECCIONES LATERALES"
-        ];
+function getGPS(){
+  const status=document.getElementById('gpsStatus');
+  if(!navigator.geolocation){status.textContent='Ubicación GPS no soportada.';return}
+  status.textContent='Obteniendo coordenadas…';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude.toFixed(6),lon=pos.coords.longitude.toFixed(6);
+    document.getElementById('gpsLat').value=lat;
+    document.getElementById('gpsLon').value=lon;
+    status.textContent='Ubicación GPS capturada.';
+    updateMapLink();
+  },err=>{status.textContent='Error al capturar ubicación.'},{enableHighAccuracy:true,timeout:15000});
+}
+function updateMapLink(){
+  const lat=document.getElementById('gpsLat').value,lon=document.getElementById('gpsLon').value;
+  const box=document.getElementById('mapLink');
+  box.innerHTML='';
+  if(lat&&lon){
+    const a=document.createElement('a');
+    a.href=`https://www.google.com/maps?q=${encodeURIComponent(lat+','+lon)}`;
+    a.target='_blank';a.textContent='Ver posición en Google Maps';
+    box.appendChild(a);
+  }
+}
+document.getElementById('gpsLat').addEventListener('input',updateMapLink);
+document.getElementById('gpsLon').addEventListener('input',updateMapLink);
 
-        function cargarTabla() {
-            const tbody = document.getElementById('tablaChequeo');
-            tbody.innerHTML = '';
-            conceptos.forEach((concepto, index) => {
-                const tr = document.createElement('tr');
-                tr.className = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/60';
-                tr.innerHTML = `
-                    <td class="p-2 border border-slate-300 font-semibold text-slate-800">${concepto}</td>
-                    <td class="p-2 border border-slate-300 text-center">
-                        <select onchange="cambiarColorSelect(this)" class="w-full text-xs border rounded p-1 bg-white font-bold select-estado">
-                            <option value="">-- Seleccionar --</option>
-                            <option value="CORRECTO" class="text-emerald-700 font-bold">CORRECTO</option>
-                            <option value="INCORRECTO" class="text-red-700 font-bold">INCORRECTO</option>
-                            <option value="N/A" class="text-slate-500">N/A</option>
-                        </select>
-                    </td>
-                    <td class="p-2 border border-slate-300">
-                        <div class="flex items-center gap-1.5">
-                            <input type="text" class="flex-grow text-xs border border-slate-300 rounded p-1 bg-white" placeholder="Detalle / Observación...">
-                            <label class="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 p-1.5 rounded text-xs transition shrink-0 no-print" title="Adjuntar foto">
-                                <i class="fa-solid fa-camera"></i>
-                                <input type="file" accept="image/*" class="hidden" onchange="adjuntarFotoItem(this)">
-                            </label>
-                        </div>
-                        <div class="galeria-item flex flex-wrap gap-1 mt-1"></div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+function getData(){
+  const f=document.getElementById('inspection');
+  const data={fields:{},photos:{},pdfs:loadedPDFs,autoMachinery:[]};
+  new FormData(f).forEach((v,k)=>data.fields[k]=v);
 
-        function cambiarColorSelect(select) {
-            select.className = "w-full text-xs border rounded p-1 font-bold select-estado " + 
-                (select.value === 'CORRECTO' ? 'bg-emerald-100 text-emerald-800 border-emerald-400' :
-                 select.value === 'INCORRECTO' ? 'bg-red-100 text-red-800 border-red-400' : 'bg-slate-100 text-slate-600');
-        }
+  document.querySelectorAll('.photos').forEach(box=>{
+    if(box.id) data.photos[box.id]=[...box.querySelectorAll('.photo-card img')].map(x=>x.src);
+  });
 
-        function adjuntarFotoItem(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const galeria = input.closest('td').querySelector('.galeria-item');
-                    const div = document.createElement('div');
-                    div.className = 'relative w-8 h-8 border rounded overflow-hidden shadow-sm inline-block';
-                    div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"><button type="button" onclick="this.parentElement.remove()" class="absolute top-0 right-0 bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center text-[7px] no-print">×</button>`;
-                    galeria.appendChild(div);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+  document.querySelectorAll('.auto-m-card').forEach(d=>{
+    const pBox=d.querySelector('.photos');
+    data.autoMachinery.push({
+      type:d.querySelector('.am-type').value,model:d.querySelector('.am-model').value,id:d.querySelector('.am-id').value,status:d.querySelector('.am-status').value,
+      cabina:d.querySelector('.am-cabina').value,estCabina:d.querySelector('.am-est-cabina').value,cuadro:d.querySelector('.am-cuadro').value,bocina:d.querySelector('.am-bocina').value,
+      ruedas:d.querySelector('.am-ruedas').value,ruido:d.querySelector('.am-ruido').value,cinturon:d.querySelector('.am-cinturon').value,acustica:d.querySelector('.am-acustica').value,
+      luces:d.querySelector('.am-luces').value,extintor:d.querySelector('.am-extintor').value,botiquin:d.querySelector('.am-botiquin').value,manual:d.querySelector('.am-manual').value,
+      photoBoxId:pBox?pBox.id:null,
+      photos:pBox?[...pBox.querySelectorAll('.photo-card img')].map(x=>x.src):[]
+    });
+  });
+  return data;
+}
 
-        function guardarBorrador() {
-            const num = document.getElementById('numTragsa').value || 'Sin_Codigo';
-            alert('¡Check-list guardado correctamente en el navegador!');
-        }
+function setData(data){
+  document.getElementById('inspection').reset();
+  Object.entries(data.fields||{}).forEach(([k,v])=>{const el=document.querySelector(`[name="${CSS.escape(k)}"]`);if(el)el.value=v});
+  
+  document.querySelectorAll('.photos').forEach(x=>x.innerHTML='');
 
-        function generarPDF() {
-            const elemento = document.getElementById('checklistForm');
-            const num = document.getElementById('numTragsa').value || 'Maquinaria';
-            html2pdf().from(elemento).set({
-                margin: 6, filename: `CheckList_TRAGSA_${num}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).save();
-        }
+  Object.entries(data.photos||{}).forEach(([id,arr])=>{
+    let box=document.getElementById(id);
+    if(!box){
+      const candidate=document.querySelector(`[onchange*="${id}"]`);
+      if(candidate){
+        box=document.createElement('div');
+        box.id=id; box.className='photos';
+        candidate.parentNode.parentNode.appendChild(box);
+      }
+    }
+    if(box) arr.forEach(src=>{
+      const card=document.createElement('div');
+      card.className='photo-card';
+      card.innerHTML=`<img src="${src}"><button type="button" class="no-print" onclick="this.closest('.photo-card').remove()">X</button>`;
+      box.appendChild(card);
+    });
+  });
 
-        document.addEventListener('DOMContentLoaded', cargarTabla);
-    </script>
+  loadedPDFs=data.pdfs||[];renderPDFList();
+  document.getElementById('autoMachinery').innerHTML='';(data.autoMachinery||[]).forEach(addAutoMachine);
+  updateMapLink();
+}
+
+function saveInspection(){
+  const data=getData();
+  const key=(data.fields.codigo||'MAQ')+'_'+(data.fields.fechaFirma||new Date().toISOString().slice(0,10));
+  let all=JSON.parse(localStorage.getItem('checklist_maq_v1')||'{}');
+  all[key]=data;
+  try{
+    localStorage.setItem('checklist_maq_v1',JSON.stringify(all));
+    document.getElementById('msg').textContent='Checklist guardado en este dispositivo.';
+  }catch(e){
+    document.getElementById('msg').textContent='Atención: Demasiadas fotos en memoria local.';
+  }
+}
+
+function showSaved(){
+  const p=document.getElementById('savedPanel');
+  p.hidden=!p.hidden;
+  if(!p.hidden){
+    const all=JSON.parse(localStorage.getItem('checklist_maq_v1')||'{}');
+    const box=document.getElementById('savedList');
+    box.innerHTML='';
+    if(Object.keys(all).length === 0){
+      box.innerHTML='<p class="small">No hay checklists guardados todavía en este dispositivo.</p>';
+      return;
+    }
+    Object.keys(all).forEach(k=>{
+      const b=document.createElement('button');
+      b.className='secondary';b.textContent='Abrir '+k;
+      b.onclick=()=>setData(all[k]);
+      box.appendChild(b);
+    });
+  }
+}
+
+function newInspection(){
+  if(confirm('¿Deseas iniciar un nuevo checklist en blanco?')){
+    document.getElementById('inspection').reset();
+    document.querySelectorAll('.photos').forEach(x=>x.innerHTML='');
+    document.getElementById('autoMachinery').innerHTML='';
+    loadedPDFs=[];renderPDFList();
+    document.getElementById('msg').textContent='Nuevo checklist listo.';
+    updateMapLink();
+  }
+}
+
+document.querySelector('[name=fechaFirma]').value=new Date().toISOString().slice(0,10);
+
+// Soporte offline automático (Service Worker)
+if('serviceWorker' in navigator){
+  const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => {});`;
+  const blob = new Blob([swCode], {type: 'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
 </body>
 </html>
