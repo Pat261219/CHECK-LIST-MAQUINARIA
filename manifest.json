@@ -1,10 +1,10 @@
 {
   "name": "Checklist Maquinaria - Grupo TRAGSA",
-  "short_name": "TRAGSA Maq",
+  "short_name": "ObraReport Maq",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#B8191C",
-  "theme_color": "#B8191C",
+  "background_color": "#15324b",
+  "theme_color": "#15324b",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
