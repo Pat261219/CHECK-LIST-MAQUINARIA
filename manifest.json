@@ -1,10 +1,10 @@
 {
-  "name": "Checklist Maquinaria - Tragsa",
-  "short_name": "ChecklistMaq",
+  "name": "Checklist Maquinaria - Grupo TRAGSA",
+  "short_name": "TRAGSA Maq",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#15324b",
-  "theme_color": "#15324b",
+  "background_color": "#B8191C",
+  "theme_color": "#B8191C",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
