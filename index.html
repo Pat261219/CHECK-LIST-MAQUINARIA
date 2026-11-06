@@ -53,30 +53,20 @@
         }
 
         .logo-cell {
-            width: 25%;
+            width: 30%;
             text-align: center;
-            font-weight: bold;
-            font-size: 22px;
-            color: var(--primary-color);
+        }
+
+        .logo-cell img {
+            max-height: 45px;
+            width: auto;
         }
 
         .title-cell {
-            width: 50%;
+            width: 70%;
             text-align: center;
             font-weight: bold;
             font-size: 18px;
-        }
-
-        .code-cell {
-            width: 25%;
-            font-size: 12px;
-        }
-
-        .code-cell input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dotted #666;
-            font-weight: bold;
         }
 
         /* Form Grid Details */
@@ -128,10 +118,10 @@
             text-align: center;
         }
 
-        .col-concept { width: 45%; font-weight: bold; }
+        .col-concept { width: 40%; font-weight: bold; }
         .col-status { width: 10%; text-align: center; }
-        .col-obs { width: 30%; }
-        .col-photo { width: 15%; text-align: center; }
+        .col-obs { width: 32%; }
+        .col-photo { width: 18%; text-align: center; }
 
         .checklist-table td input[type="text"] {
             width: 100%;
@@ -148,26 +138,29 @@
 
         /* Photo Upload & Preview */
         .photo-btn-label {
-            background-color: #e0e0e0;
-            border: 1px solid #999;
-            padding: 3px 6px;
+            background-color: #005a36;
+            color: white;
+            border: none;
+            padding: 4px 8px;
             font-size: 10px;
+            font-weight: bold;
             border-radius: 3px;
             cursor: pointer;
             display: inline-block;
         }
 
         .photo-btn-label:hover {
-            background-color: #ccc;
+            background-color: #004026;
         }
 
         .photo-preview {
-            max-width: 50px;
-            max-height: 40px;
+            max-width: 60px;
+            max-height: 45px;
             object-fit: cover;
             display: block;
-            margin: 2px auto;
-            border: 1px solid #ccc;
+            margin: 3px auto;
+            border: 1px solid #999;
+            border-radius: 3px;
             cursor: pointer;
         }
 
@@ -196,7 +189,41 @@
             cursor: crosshair;
         }
 
-        /* Controls */
+        /* Gallery Grid for Print/View Photos */
+        .photos-appendix {
+            margin-top: 20px;
+            border: 2px solid var(--border-color);
+            padding: 10px;
+        }
+
+        .photos-appendix-title {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .photo-card {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+
+        /* Action Buttons */
         .action-bar {
             position: fixed;
             bottom: 15px;
@@ -222,25 +249,26 @@
             background-color: #c9302c;
         }
 
-        /* Modal Image Viewer */
+        /* Modal Viewer */
         .modal {
             display: none;
             position: fixed;
             z-index: 2000;
             left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             justify-content: center;
             align-items: center;
         }
 
-        .modal img { max-width: 90%; max-height: 90%; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 4px; }
 
         @media print {
             body { background: white; padding: 0; }
-            .paper-page { box-shadow: none; max-width: 100%; padding: 0; }
+            .paper-page { box-shadow: none; max-width: 100%; padding: 0; margin-bottom: 0; }
             .action-bar, .photo-btn-label { display: none !important; }
             .sig-canvas { border: none; }
-            input { border: none !important; }
+            input, textarea { border: none !important; }
+            .photo-preview { max-width: 50px; max-height: 35px; }
         }
     </style>
 </head>
@@ -256,15 +284,10 @@
         <table class="header-table">
             <tr>
                 <td class="logo-cell">
-                    <span style="color:#005a36">Tragsa</span><br>
-                    <span style="font-size:10px; color:#555;">Grupo Tragsa</span>
+                    <img src="logo.png" alt="Grupo Tragsa" id="img-logo">
                 </td>
                 <td class="title-cell">
                     CHECK-LIST RECEPCIÓN DE MAQUINARIA
-                </td>
-                <td class="code-cell">
-                    <div><strong>Nº REGISTRO:</strong> <input type="text" id="reg_num"></div>
-                    <div style="margin-top:5px;"><strong>CÓDIGO:</strong> <input type="text" id="reg_cod"></div>
                 </td>
             </tr>
         </table>
@@ -273,10 +296,11 @@
             <div class="field-group"><label>TIPO DE MÁQUINA:</label><input type="text" id="tipo_maq"></div>
             <div class="field-group"><label>Nº TRAGSA:</label><input type="text" id="num_tragsa"></div>
             <div class="field-group"><label>MARCA/MODELO:</label><input type="text" id="marca_modelo"></div>
+            <div class="field-group"><label>MATRÍCULA:</label><input type="text" id="matricula"></div>
             <div class="field-group"><label>Nº BASTIDOR:</label><input type="text" id="num_bastidor"></div>
             <div class="field-group"><label>CUENTAHORAS:</label><input type="text" id="cuentahoras"></div>
             <div class="field-group"><label>PROCEDENCIA:</label><input type="text" id="procedencia"></div>
-            <div class="field-group" style="grid-column: span 2;"><label>OBRA DESTINO:</label><input type="text" id="obra_destino"></div>
+            <div class="field-group"><label>OBRA DESTINO:</label><input type="text" id="obra_destino"></div>
         </div>
 
         <table class="checklist-table">
@@ -286,7 +310,7 @@
                     <th class="col-status">CORRECTO</th>
                     <th class="col-status">INCORRECTO</th>
                     <th class="col-obs">OBSERVACIONES</th>
-                    <th class="col-photo">FOTO</th>
+                    <th class="col-photo">FOTOGRAFÍA</th>
                 </tr>
             </thead>
             <tbody id="checklist-body">
@@ -294,36 +318,46 @@
         </table>
     </div>
 
-    <!-- PÁGINA 2: OBSERVACIONES Y FIRMAS -->
+    <!-- PÁGINA 2: OBSERVACIONES, FIRMAS Y ANEXO FOTOGRÁFICO -->
     <div class="paper-page" style="page-break-before: always;">
         <table class="header-table">
             <tr>
-                <td class="logo-cell">Tragsa</td>
+                <td class="logo-cell">
+                    <img src="logo.png" alt="Grupo Tragsa">
+                </td>
                 <td class="title-cell">CHECK-LIST RECEPCIÓN DE MAQUINARIA (DORSO)</td>
             </tr>
         </table>
 
-        <div style="border: 2px solid var(--border-color); padding: 10px; min-height: 250px; margin-bottom: 20px;">
+        <div style="border: 2px solid var(--border-color); padding: 10px; min-height: 180px; margin-bottom: 15px;">
             <label style="font-weight: bold; font-size: 12px; display: block; margin-bottom: 8px;">OBSERVACIONES / ESTADO VISUAL GENERAL:</label>
-            <textarea id="obs_generales" style="width: 100%; height: 200px; border: none; font-size: 12px; resize: none; font-family: inherit;"></textarea>
+            <textarea id="obs_generales" style="width: 100%; height: 140px; border: none; font-size: 12px; resize: none; font-family: inherit;"></textarea>
+        </div>
+
+        <!-- Anexo dinámico con las fotos adjuntas -->
+        <div class="photos-appendix">
+            <div class="photos-appendix-title">REGISTRO FOTOGRÁFICO DE ÍTEMS REVISADOS:</div>
+            <div class="photos-grid" id="photos-gallery">
+            </div>
         </div>
 
         <div class="signatures-grid">
             <div class="sig-box">
                 <div>REALIZA EL CHECK-LIST TRAGSA</div>
-                <div style="margin: 5px 0;"><input type="text" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
+                <div style="margin: 5px 0;"><input type="text" id="sig_name_1" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
                 <canvas id="canvas-firma-1" class="sig-canvas" width="350" height="90"></canvas>
                 <div style="font-size:9px; color:#666; margin-top:2px;">Firma Digital / Táctil</div>
             </div>
             <div class="sig-box">
                 <div>CONFORME CON EL CHECK-LIST</div>
-                <div style="margin: 5px 0;"><input type="text" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
+                <div style="margin: 5px 0;"><input type="text" id="sig_name_2" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
                 <canvas id="canvas-firma-2" class="sig-canvas" width="350" height="90"></canvas>
                 <div style="font-size:9px; color:#666; margin-top:2px;">Firma Digital / Táctil</div>
             </div>
         </div>
     </div>
 
+    <!-- Modal para zoom de imagen -->
     <div id="modal-foto" class="modal" onclick="this.style.display='none'">
         <img id="img-ampliada" src="" alt="Vista Previa">
     </div>
@@ -375,7 +409,7 @@
                     <input type="text" id="obs_${idx}" placeholder="Anotaciones...">
                 </td>
                 <td class="col-photo">
-                    <label class="photo-btn-label" for="file_${idx}">📷 Añadir</label>
+                    <label class="photo-btn-label" for="file_${idx}">📷 Foto</label>
                     <input type="file" id="file_${idx}" accept="image/*" capture="environment" style="display:none;" onchange="procesarFoto(event, ${idx})">
                     <img id="prev_${idx}" class="photo-preview" style="display:none;" onclick="ampliarFoto(this.src)">
                 </td>
@@ -419,11 +453,37 @@
                         const prevImg = document.getElementById(`prev_${idx}`);
                         prevImg.src = dataUrl;
                         prevImg.style.display = 'block';
+                        
+                        actualizarGaleria();
                         guardarEstadoLocal();
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            }
+        }
+
+        function actualizarGaleria() {
+            const gallery = document.getElementById("photos-gallery");
+            gallery.innerHTML = "";
+            let fotosEncontradas = 0;
+
+            conceptos.forEach((concepto, idx) => {
+                const prev = document.getElementById(`prev_${idx}`);
+                if (prev && prev.src && prev.style.display !== "none") {
+                    fotosEncontradas++;
+                    const card = document.createElement("div");
+                    card.className = "photo-card";
+                    card.innerHTML = `
+                        <img src="${prev.src}" onclick="ampliarFoto(this.src)">
+                        <div style="margin-top:3px; font-weight:bold;">${concepto}</div>
+                    `;
+                    gallery.appendChild(card);
+                }
+            });
+
+            if (fotosEncontradas === 0) {
+                gallery.innerHTML = '<div style="grid-column: span 3; font-size: 10px; color: #777; text-align: center;">Sin imágenes capturadas para los ítems.</div>';
             }
         }
 
@@ -485,14 +545,17 @@
             });
             conceptos.forEach((_, idx) => {
                 const prev = document.getElementById(`prev_${idx}`);
-                if (prev && prev.src) data[`photo_${idx}`] = prev.src;
+                if (prev && prev.src && prev.style.display !== 'none') data[`photo_${idx}`] = prev.src;
             });
             localStorage.setItem("tragsa_checklist_draft", JSON.stringify(data));
         }
 
         function cargarEstadoLocal() {
             const saved = localStorage.getItem("tragsa_checklist_draft");
-            if (!saved) return;
+            if (!saved) {
+                actualizarGaleria();
+                return;
+            }
             const data = JSON.parse(saved);
             Object.keys(data).forEach(key => {
                 if (key.startsWith("photo_")) {
@@ -509,10 +572,11 @@
                     if (elChk) elChk.checked = data[key];
                 }
             });
+            actualizarGaleria();
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Estás seguro de que deseas borrar todo el formulario?")) {
+            if (confirm("¿Estás seguro de que deseas borrar todo el formulario y las fotos cargadas?")) {
                 localStorage.removeItem("tragsa_checklist_draft");
                 window.location.reload();
             }
