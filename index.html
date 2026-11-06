@@ -1,280 +1,525 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checklist Maquinaria - Grupo TRAGSA</title>
-<link rel="manifest" href="manifest.json">
-<style>
-:root{--navy:#15324b;--line:#15324b;--bg:#f2f5f8;--muted:#555}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);font:13px Arial,sans-serif;color:#000}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-List Recepción de Maquinaria - TRAGSA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005a36">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CheckList Tragsa">
+    <style>
+        :root {
+            --primary-color: #005a36;
+            --border-color: #000;
+            --bg-gray: #f4f4f4;
+        }
 
-/* Barra de herramientas superior (No sale al imprimir) */
-.toolbar{max-width:900px;margin:15px auto;background:white;border:1px solid #d9e1e8;border-radius:8px;padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-button,.btn{border:0;border-radius:6px;padding:9px 14px;background:#15324b;color:white;font-weight:600;cursor:pointer;font-size:12px}
-button.secondary{background:#e8eef3;color:#15324b}
-button.danger{background:#a73535}
-.status{font-size:12px;color:#23633b;font-weight:bold;margin-left:auto}
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-/* Contenedor tipo documento oficial de 2 páginas */
-.page-container{max-width:900px;margin:0 auto 20px auto;}
-.tragsa-page{background:white;border:1px solid #15324b;padding:25px;margin-bottom:20px;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:relative;page-break-after:always;}
+        body {
+            background-color: #525659;
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* Cabecera oficial TRAGSA */
-.tragsa-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #15324b;padding-bottom:10px;margin-bottom:15px}
-.tragsa-logo{font-size:24px;font-weight:bold;color:#15324b;letter-spacing:1px}
-.tragsa-title{text-align:right}
-.tragsa-title h1{margin:0;font-size:14px;text-transform:uppercase;color:#15324b}
-.tragsa-title p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+        .paper-page {
+            background: white;
+            width: 100%;
+            max-width: 850px;
+            padding: 25px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
 
-/* Tablas y campos oficiales */
-table.tragsa-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px}
-table.tragsa-table th, table.tragsa-table td{border:1px solid #15324b;padding:6px 8px;vertical-align:middle}
-table.tragsa-table th{background:#e8edf2;color:#15324b;text-align:left;font-weight:bold}
-.section-title{background:#15324b;color:white;font-weight:bold;padding:5px 8px;font-size:12px;text-transform:uppercase;margin:15px 0 8px 0}
+        /* Header Layout */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
 
-input,select,textarea{width:100%;padding:5px;border:1px solid #aaa;border-radius:3px;font:inherit;background:#fff}
-select{background:#fff}
-textarea{min-height:50px;resize:vertical}
+        .header-table td {
+            border: 2px solid var(--border-color);
+            padding: 8px;
+            vertical-align: middle;
+        }
 
-.photos{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.photo-card{position:relative;width:90px;height:70px;border:1px solid #15324b;overflow:hidden;background:#000}
-.photos img{width:100%;height:100%;object-fit:cover}
-.photo-card button{position:absolute;top:1px;right:1px;background:#a73535;color:white;border:0;font-size:9px;cursor:pointer}
+        .logo-cell {
+            width: 25%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 22px;
+            color: var(--primary-color);
+        }
 
-.signatures-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:20px}
-.sig-box{border:1px solid #15324b;height:110px;padding:6px;position:relative}
-.sig-box label{font-size:11px;font-weight:bold;color:#15324b;display:block}
+        .title-cell {
+            width: 50%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-@media print{
-  body{background:white}
-  .toolbar,.no-print{display:none!important}
-  .page-container{margin:0;max-width:none}
-  .tragsa-page{border:0;padding:0;margin:0;box-shadow:none;page-break-after:always}
-  input,select,textarea{border:0;border-bottom:1px solid #666;padding:2px 0;background:transparent;border-radius:0}
-}
-</style>
+        .code-cell {
+            width: 25%;
+            font-size: 12px;
+        }
+
+        .code-cell input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px dotted #666;
+            font-weight: bold;
+        }
+
+        /* Form Grid Details */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            padding: 10px;
+        }
+
+        .field-group {
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .field-group label {
+            min-width: 130px;
+            text-transform: uppercase;
+        }
+
+        .field-group input {
+            flex-grow: 1;
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 2px 4px;
+            font-size: 12px;
+        }
+
+        /* Main Check List Table */
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .checklist-table th, .checklist-table td {
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            font-size: 11px;
+        }
+
+        .checklist-table th {
+            background-color: var(--bg-gray);
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .col-concept { width: 45%; font-weight: bold; }
+        .col-status { width: 10%; text-align: center; }
+        .col-obs { width: 30%; }
+        .col-photo { width: 15%; text-align: center; }
+
+        .checklist-table td input[type="text"] {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 11px;
+        }
+
+        .status-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Photo Upload & Preview */
+        .photo-btn-label {
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            padding: 3px 6px;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .photo-btn-label:hover {
+            background-color: #ccc;
+        }
+
+        .photo-preview {
+            max-width: 50px;
+            max-height: 40px;
+            object-fit: cover;
+            display: block;
+            margin: 2px auto;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        /* Signatures Section */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            border: 2px solid var(--border-color);
+            padding: 10px;
+        }
+
+        .sig-box {
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .sig-canvas {
+            border: 1px dashed #666;
+            width: 100%;
+            height: 90px;
+            background-color: #fafafa;
+            margin-top: 5px;
+            cursor: crosshair;
+        }
+
+        /* Controls */
+        .action-bar {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-clear {
+            background-color: #c9302c;
+        }
+
+        /* Modal Image Viewer */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img { max-width: 90%; max-height: 90%; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .paper-page { box-shadow: none; max-width: 100%; padding: 0; }
+            .action-bar, .photo-btn-label { display: none !important; }
+            .sig-canvas { border: none; }
+            input { border: none !important; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="toolbar no-print">
-<button type="button" onclick="newDoc()">Nuevo Formulario</button>
-<button type="button" class="secondary" onclick="saveDoc()">Guardar en Dispositivo</button>
-<button type="button" class="secondary" onclick="window.print()">Imprimir / Guardar PDF (2 Páginas)</button>
-<button type="button" class="secondary" onclick="showSaved()">Histórico</button>
-<span id="msg" class="status"></span>
-</div>
-
-<div class="page-container" id="savedPanel" hidden style="background:white;padding:15px;border-radius:8px;border:1px solid #d9e1e8;margin-bottom:15px;">
-  <strong>Registros guardados localmente:</strong>
-  <div id="savedList" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
-</div>
-
-<form id="inspectionForm">
-
-<!-- ================= PÁGINA 1 ================= -->
-<div class="tragsa-page">
-  <div class="tragsa-header">
-    <div class="tragsa-logo">TRAGSA</div>
-    <div class="tragsa-title">
-      <h1>Checklist de Maquinaria Autopropulsada</h1>
-      <p>Control Preventivo y Verificación en Obra</p>
+    <div class="action-bar">
+        <button class="btn btn-clear" onclick="limpiarFormulario()">Limpiar Formulario</button>
+        <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
     </div>
-  </div>
 
-  <div class="section-title">1. Datos de Identificación y Emplazamiento</div>
-  <table class="tragsa-table">
-    <tr>
-      <th style="width:25%;">Código de Obra / Encargo</th>
-      <td style="width:25%;"><input name="codigoObra" placeholder="Ej. 86661"></td>
-      <th style="width:20%;">Fecha de Revisión</th>
-      <td><input name="fechaRev" type="date"></td>
-    </tr>
-    <tr>
-      <th>Nombre de la Actuación</th>
-      <td colspan="3"><input name="nombreObra" placeholder="Nombre completo de la obra o monte"></td>
-    </tr>
-    <tr>
-      <th>Técnico / Responsable PRL</th>
-      <td colspan="3"><input name="tecnico" placeholder="Nombre del inspector"></td>
-    </tr>
-  </table>
+    <!-- PÁGINA 1 -->
+    <div class="paper-page">
+        <table class="header-table">
+            <tr>
+                <td class="logo-cell">
+                    <span style="color:#005a36">Tragsa</span><br>
+                    <span style="font-size:10px; color:#555;">Grupo Tragsa</span>
+                </td>
+                <td class="title-cell">
+                    CHECK-LIST RECEPCIÓN DE MAQUINARIA
+                </td>
+                <td class="code-cell">
+                    <div><strong>Nº REGISTRO:</strong> <input type="text" id="reg_num"></div>
+                    <div style="margin-top:5px;"><strong>CÓDIGO:</strong> <input type="text" id="reg_cod"></div>
+                </td>
+            </tr>
+        </table>
 
-  <div class="section-title">2. Identificación de la Máquina o Equipo</div>
-  <table class="tragsa-table">
-    <tr>
-      <th style="width:25%;">Tipo de Máquina</th>
-      <td><input name="tipoMaq" placeholder="Ej. Retropala, Dumper, Tractor"></td>
-      <th style="width:25%;">Marca y Modelo</th>
-      <td><input name="modeloMaq" placeholder="Ej. Caterpillar / John Deere"></td>
-    </tr>
-    <tr>
-      <th>Matrícula / Nº Bastidor</th>
-      <td><input name="matricula" placeholder="Nº identificación o matrícula"></td>
-      <th>Procedencia / Obra Origen</th>
-      <td><input name="procedencia" placeholder="Lugar de procedencia"></td>
-    </tr>
-  </table>
+        <div class="info-grid">
+            <div class="field-group"><label>TIPO DE MÁQUINA:</label><input type="text" id="tipo_maq"></div>
+            <div class="field-group"><label>Nº TRAGSA:</label><input type="text" id="num_tragsa"></div>
+            <div class="field-group"><label>MARCA/MODELO:</label><input type="text" id="marca_modelo"></div>
+            <div class="field-group"><label>Nº BASTIDOR:</label><input type="text" id="num_bastidor"></div>
+            <div class="field-group"><label>CUENTAHORAS:</label><input type="text" id="cuentahoras"></div>
+            <div class="field-group"><label>PROCEDENCIA:</label><input type="text" id="procedencia"></div>
+            <div class="field-group" style="grid-column: span 2;"><label>OBRA DESTINO:</label><input type="text" id="obra_destino"></div>
+        </div>
 
-  <div class="section-title">3. Tabla de Comprobación de Puntos Críticos de Seguridad</div>
-  <table class="tragsa-table" id="checkTable">
-    <tr>
-      <th>Elemento / Punto de Control</th>
-      <th style="width:70px;text-align:center;">SÍ</th>
-      <th style="width:70px;text-align:center;">NO</th>
-      <th style="width:90px;text-align:center;">N/A</th>
-    </tr>
-    <!-- Filas estándar del checklist de maquinaria tragsa -->
-    <tr><td>1. Estructura de protección (ROPS / FOPS / Arco antivuelco)</td><td><select name="c1"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c1_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c1_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>2. Estado de la cabina, puertas, cristales y elementos de acceso</td><td><select name="c2"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c2_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c2_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>3. Cuadro de mandos, instrumentos de control y testigos luminosos</td><td><select name="c3"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c3_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c3_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>4. Bocina y avisadores acústicos operativos</td><td><select name="c4"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c4_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c4_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>5. Estado de neumáticos / cadenas y presión de inflado</td><td><select name="c5"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c5_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c5_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>6. Nivel de ruido e insonorización del escape</td><td><select name="c6"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c6_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c6_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>7. Cinturón de seguridad y sistemas de retención</td><td><select name="c7"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c7_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c7_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>8. Alarma acústica y luminosa de marcha atrás</td><td><select name="c8"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c8_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c8_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>9. Alumbrado, señalización y rotativo luminoso</td><td><select name="c9"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c9_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c9_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>10. Extintor portátil operativo y revisado</td><td><select name="c10"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c10_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c10_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>11. Botiquín de primeros auxilios disponible</td><td><select name="c11"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c11_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c11_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-    <tr><td>12. Manual de instrucciones del fabricante a bordo</td><td><select name="c12"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c12_no"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td><td><select name="c12_na"><option value="">-</option><option>SÍ</option><option>NO</option><option>N/A</option></select></td></tr>
-  </table>
-  <div style="font-size:11px;color:#555;text-align:right;">Página 1 de 2</div>
-</div>
-
-<!-- ================= PÁGINA 2 ================= -->
-<div class="tragsa-page">
-  <div class="tragsa-header">
-    <div class="tragsa-logo">TRAGSA</div>
-    <div class="tragsa-title">
-      <h1>Checklist de Maquinaria Autopropulsada</h1>
-      <p>Dictamen Técnico y Firmas</p>
+        <table class="checklist-table">
+            <thead>
+                <tr>
+                    <th class="col-concept">CONCEPTO A CHEQUEAR</th>
+                    <th class="col-status">CORRECTO</th>
+                    <th class="col-status">INCORRECTO</th>
+                    <th class="col-obs">OBSERVACIONES</th>
+                    <th class="col-photo">FOTO</th>
+                </tr>
+            </thead>
+            <tbody id="checklist-body">
+            </tbody>
+        </table>
     </div>
-  </div>
 
-  <div class="section-title">4. Estado Visual y Registro Fotográfico</div>
-  <div style="border:1px solid #15324b;padding:10px;min-height:140px;margin-bottom:12px;">
-    <label style="font-weight:bold;font-size:11px;display:block;margin-bottom:5px;">Incorporar fotografías de la máquina inspeccionada:</label>
-    <input class="no-print" type="file" accept="image/*" multiple style="margin-bottom:8px;font-size:11px;" onchange="addPhotos(this, 'page2Photos')">
-    <div class="photos" id="page2Photos"></div>
-  </div>
+    <!-- PÁGINA 2: OBSERVACIONES Y FIRMAS -->
+    <div class="paper-page" style="page-break-before: always;">
+        <table class="header-table">
+            <tr>
+                <td class="logo-cell">Tragsa</td>
+                <td class="title-cell">CHECK-LIST RECEPCIÓN DE MAQUINARIA (DORSO)</td>
+            </tr>
+        </table>
 
-  <div class="section-title">5. Observaciones, Deficiencias Detectadas y Medidas Correctoras</div>
-  <textarea name="observaciones" style="min-height:160px;" placeholder="Indique aquí las deficiencias observadas, actuaciones correctoras necesarias o comentarios sobre el estado de la máquina..."></textarea>
+        <div style="border: 2px solid var(--border-color); padding: 10px; min-height: 250px; margin-bottom: 20px;">
+            <label style="font-weight: bold; font-size: 12px; display: block; margin-bottom: 8px;">OBSERVACIONES / ESTADO VISUAL GENERAL:</label>
+            <textarea id="obs_generales" style="width: 100%; height: 200px; border: none; font-size: 12px; resize: none; font-family: inherit;"></textarea>
+        </div>
 
-  <div style="margin-top:20px;">
-    <table class="tragsa-table" style="width:40%;">
-      <tr>
-        <th>Resultado Final</th>
-        <td><select name="resultadoApto"><option value="">Seleccionar</option><option>APTO</option><option>NO APTO</option><option>APTO CON CONDICIONES</option></select></td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="section-title" style="margin-top:25px;">6. Conformidad y Firmas</div>
-  <div class="signatures-grid">
-    <div class="sig-box">
-      <label>Firma del Técnico / Inspector:</label>
-      <div style="margin-top:55px;font-size:10px;color:#777;border-top:1px dashed #15324b;padding-top:2px;">Fecha: <input name="fechaFirma1" style="border:0;width:100px;display:inline;" type="date"></div>
+        <div class="signatures-grid">
+            <div class="sig-box">
+                <div>REALIZA EL CHECK-LIST TRAGSA</div>
+                <div style="margin: 5px 0;"><input type="text" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
+                <canvas id="canvas-firma-1" class="sig-canvas" width="350" height="90"></canvas>
+                <div style="font-size:9px; color:#666; margin-top:2px;">Firma Digital / Táctil</div>
+            </div>
+            <div class="sig-box">
+                <div>CONFORME CON EL CHECK-LIST</div>
+                <div style="margin: 5px 0;"><input type="text" placeholder="Nombre, apellidos y DNI" style="width:90%; text-align:center; border:none; border-bottom:1px solid #999;"></div>
+                <canvas id="canvas-firma-2" class="sig-canvas" width="350" height="90"></canvas>
+                <div style="font-size:9px; color:#666; margin-top:2px;">Firma Digital / Táctil</div>
+            </div>
+        </div>
     </div>
-    <div class="sig-box">
-      <label>Firma del Responsable / Operador:</label>
-      <div style="margin-top:55px;font-size:10px;color:#777;border-top:1px dashed #15324b;padding-top:2px;">Fecha: <input name="fechaFirma2" style="border:0;width:100px;display:inline;" type="date"></div>
+
+    <div id="modal-foto" class="modal" onclick="this.style.display='none'">
+        <img id="img-ampliada" src="" alt="Vista Previa">
     </div>
-  </div>
-  <div style="font-size:11px;color:#555;text-align:right;margin-top:15px;">Página 2 de 2</div>
-</div>
 
-</form>
+    <script>
+        const conceptos = [
+            "LUZ ROTATIVA",
+            "CINTURÓN DE SEGURIDAD",
+            "ESPEJOS RETROVISORES",
+            "ALARMA ACÚSTICA DE MARCHA ATRÁS",
+            "BOCINA-CLAXON",
+            "EMISORA",
+            "EXTINTOR",
+            "ESTADO INTERIOR DE LA CABINA",
+            "ESTADO DE LUNAS Y CRISTALES",
+            "GOLPES Y ABOLLADURAS",
+            "FUNCIONAMIENTO DE TODOS LOS TESTIGOS DEL CUADRO DE INSTRUMENTOS",
+            "FUNCIONAMIENTO DE TODOS LOS CONTROLES DE OPERACIÓN DE LA MÁQUINA DEL PUESTO DE OPERACIÓN",
+            "Estado de las cubiertas / orugas: ORUGAS",
+            "Estado de las cubiertas / orugas: NEUMÁTICO DELANTERO DERECHO",
+            "Estado de las cubiertas / orugas: NEUMÁTICO DELANTERO IZQUIERDO",
+            "Estado de las cubiertas / orugas: NEUMÁTICO TRASERO DERECHO",
+            "Estado de las cubiertas / orugas: NEUMÁTICO TRASERO IZQUIERDO",
+            "FUNCIONAMIENTO DE LAS LUCES E INDICADORES",
+            "AIRE ACONDICIONADO",
+            "Documentación máquina: MANUAL DEL OPERADOR",
+            "Documentación máquina: HOJA DE CONTROL DE ÚLTIMOS MANTENIMIENTOS",
+            "INEXISTENCIA DE PÉRDIDAS DE FLUIDOS EN MÁQUINA (Indicar componente)",
+            "NIVELES: NIVEL DE ACEITE MOTOR",
+            "NIVELES: NIVEL DE REFRIGERANTE",
+            "NIVELES: NIVEL DE ACEITE HIDRÁULICO",
+            "OTROS: DIENTES Y PROTECCIONES DEL CAZO",
+            "OTROS: CAZO"
+        ];
 
-<script>
-function addPhotos(inp, id){
-  const box=document.getElementById(id);
-  [...inp.files].forEach(f=>{
-    const r=new FileReader();
-    r.onload=()=>{
-      const card=document.createElement('div');
-      card.className='photo-card';
-      card.innerHTML=`<img src="${r.result}"><button type="button" class="no-print" onclick="this.closest('.photo-card').remove()">X</button>`;
-      box.appendChild(card);
-    };
-    r.readAsDataURL(f);
-  });
-  inp.value='';
-}
+        const tbody = document.getElementById("checklist-body");
 
-function getData(){
-  const f=document.getElementById('inspectionForm');
-  const data={fields:{},photos:{}};
-  new FormData(f).forEach((v,k)=>data.fields[k]=v);
-  document.querySelectorAll('.photos').forEach(box=>{
-    if(box.id) data.photos[box.id]=[...box.querySelectorAll('.photo-card img')].map(x=>x.src);
-  });
-  return data;
-}
+        conceptos.forEach((concepto, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td class="col-concept">${concepto}</td>
+                <td class="col-status">
+                    <input type="checkbox" class="status-checkbox" name="chk_c_${idx}" onclick="toggleCheck(this, 'chk_i_${idx}')">
+                </td>
+                <td class="col-status">
+                    <input type="checkbox" class="status-checkbox" name="chk_i_${idx}" onclick="toggleCheck(this, 'chk_c_${idx}')">
+                </td>
+                <td class="col-obs">
+                    <input type="text" id="obs_${idx}" placeholder="Anotaciones...">
+                </td>
+                <td class="col-photo">
+                    <label class="photo-btn-label" for="file_${idx}">📷 Añadir</label>
+                    <input type="file" id="file_${idx}" accept="image/*" capture="environment" style="display:none;" onchange="procesarFoto(event, ${idx})">
+                    <img id="prev_${idx}" class="photo-preview" style="display:none;" onclick="ampliarFoto(this.src)">
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
 
-function setData(data){
-  document.getElementById('inspectionForm').reset();
-  Object.entries(data.fields||{}).forEach(([k,v])=>{const el=document.querySelector(`[name="${CSS.escape(k)}"]`);if(el)el.value=v});
-  document.querySelectorAll('.photos').forEach(x=>x.innerHTML='');
-  Object.entries(data.photos||{}).forEach(([id,arr])=>{
-    const box=document.getElementById(id);
-    if(box) arr.forEach(src=>{
-      const card=document.createElement('div');
-      card.className='photo-card';
-      card.innerHTML=`<img src="${src}"><button type="button" class="no-print" onclick="this.closest('.photo-card').remove()">X</button>`;
-      box.appendChild(card);
-    });
-  });
-}
+        function toggleCheck(current, oppositeName) {
+            if (current.checked) {
+                document.getElementsByName(oppositeName)[0].checked = false;
+            }
+            guardarEstadoLocal();
+        }
 
-function saveDoc(){
-  const data=getData();
-  const key=(data.fields.codigoObra||'OBRA')+'_'+(data.fields.fechaRev||new Date().toISOString().slice(0,10));
-  let all=JSON.parse(localStorage.getItem('tragsa_maq_v2')||'{}');
-  all[key]=data;
-  try{
-    localStorage.setItem('tragsa_maq_v2',JSON.stringify(all));
-    document.getElementById('msg').textContent='Guardado correctamente.';
-  }catch(e){
-    document.getElementById('msg').textContent='Aviso: Demasiadas fotos en memoria.';
-  }
-}
+        function procesarFoto(event, idx) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxDim = 800;
+                        let width = img.width;
+                        let height = img.height;
 
-function showSaved(){
-  const p=document.getElementById('savedPanel');
-  p.hidden=!p.hidden;
-  if(!p.hidden){
-    const all=JSON.parse(localStorage.getItem('tragsa_maq_v2')||'{}');
-    const box=document.getElementById('savedList');
-    box.innerHTML='';
-    if(Object.keys(all).length===0){box.innerHTML='<span style="font-size:11px;color:#555;">No hay registros almacenados.</span>';return;}
-    Object.keys(all).forEach(k=>{
-      const b=document.createElement('button');
-      b.className='secondary';b.textContent='Cargar '+k;
-      b.onclick=()=>setData(all[k]);
-      box.appendChild(b);
-    });
-  }
-}
+                        if (width > height && width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        } else if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
 
-function newDoc(){
-  if(confirm('¿Deseas vaciar el formulario para una nueva inspección?')){
-    document.getElementById('inspectionForm').reset();
-    document.querySelectorAll('.photos').forEach(x=>x.innerHTML='');
-    document.getElementById('msg').textContent='Formulario listo.';
-  }
-}
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        const prevImg = document.getElementById(`prev_${idx}`);
+                        prevImg.src = dataUrl;
+                        prevImg.style.display = 'block';
+                        guardarEstadoLocal();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-const today = new Date().toISOString().slice(0,10);
-const dateInp = document.querySelector('[name=fechaRev]');
-if(dateInp && !dateInp.value) dateInp.value = today;
+        function ampliarFoto(src) {
+            document.getElementById("img-ampliada").src = src;
+            document.getElementById("modal-foto").style.display = "flex";
+        }
 
-if('serviceWorker' in navigator){
-  const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => {});`;
-  const blob = new Blob([swCode], {type: 'text/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-}
-</script>
+        function initCanvasFirma(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            let dibujando = false;
+
+            function start(e) {
+                dibujando = true;
+                ctx.beginPath();
+                const pos = getPos(e);
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function move(e) {
+                if (!dibujando) return;
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+
+            function stop() {
+                dibujando = false;
+                guardarEstadoLocal();
+            }
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            canvas.addEventListener("mousedown", start);
+            canvas.addEventListener("mousemove", move);
+            canvas.addEventListener("mouseup", stop);
+
+            canvas.addEventListener("touchstart", start, {passive: true});
+            canvas.addEventListener("touchmove", move, {passive: true});
+            canvas.addEventListener("touchend", stop);
+        }
+
+        initCanvasFirma("canvas-firma-1");
+        initCanvasFirma("canvas-firma-2");
+
+        function guardarEstadoLocal() {
+            const data = {};
+            document.querySelectorAll("input[type=text], textarea").forEach(el => {
+                if (el.id) data[el.id] = el.value;
+            });
+            document.querySelectorAll("input[type=checkbox]").forEach(el => {
+                if (el.name) data[el.name] = el.checked;
+            });
+            conceptos.forEach((_, idx) => {
+                const prev = document.getElementById(`prev_${idx}`);
+                if (prev && prev.src) data[`photo_${idx}`] = prev.src;
+            });
+            localStorage.setItem("tragsa_checklist_draft", JSON.stringify(data));
+        }
+
+        function cargarEstadoLocal() {
+            const saved = localStorage.getItem("tragsa_checklist_draft");
+            if (!saved) return;
+            const data = JSON.parse(saved);
+            Object.keys(data).forEach(key => {
+                if (key.startsWith("photo_")) {
+                    const idx = key.split("_")[1];
+                    const prev = document.getElementById(`prev_${idx}`);
+                    if (prev && data[key]) {
+                        prev.src = data[key];
+                        prev.style.display = "block";
+                    }
+                } else {
+                    const elInput = document.getElementById(key);
+                    const elChk = document.getElementsByName(key)[0];
+                    if (elInput) elInput.value = data[key];
+                    if (elChk) elChk.checked = data[key];
+                }
+            });
+        }
+
+        function limpiarFormulario() {
+            if (confirm("¿Estás seguro de que deseas borrar todo el formulario?")) {
+                localStorage.removeItem("tragsa_checklist_draft");
+                window.location.reload();
+            }
+        }
+
+        document.addEventListener("input", guardarEstadoLocal);
+        window.onload = cargarEstadoLocal;
+    </script>
 </body>
 </html>
