@@ -30,6 +30,31 @@
             align-items: center;
         }
 
+        /* Panel de Historial y Búsqueda por Matrícula */
+        .history-panel {
+            background: #fff;
+            width: 100%;
+            max-width: 850px;
+            padding: 12px 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.3);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .history-panel select {
+            padding: 6px;
+            font-size: 12px;
+            flex-grow: 1;
+            max-width: 350px;
+            border: 1px solid #777;
+            border-radius: 4px;
+        }
+
         .paper-page {
             background: white;
             width: 100%;
@@ -39,7 +64,6 @@
             margin-bottom: 20px;
         }
 
-        /* Campo Matrícula Superior (Añadido a mayores) */
         .top-matricula-line {
             display: flex;
             justify-content: flex-start;
@@ -62,7 +86,6 @@
             text-transform: uppercase;
         }
 
-        /* Encabezado Original de 3 Columnas */
         .header-table {
             width: 100%;
             border-collapse: collapse;
@@ -76,7 +99,7 @@
         }
 
         .logo-cell {
-            width: 25%;
+            width: 30%;
             text-align: center;
         }
 
@@ -86,30 +109,13 @@
         }
 
         .title-cell {
-            width: 50%;
+            width: 70%;
             text-align: center;
             font-weight: bold;
             font-size: 17px;
             letter-spacing: 0.5px;
         }
 
-        .code-cell {
-            width: 25%;
-            font-size: 11px;
-        }
-
-        .code-cell div {
-            margin-bottom: 3px;
-        }
-
-        .code-cell input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dotted #666;
-            font-size: 11px;
-        }
-
-        /* Bloque de Datos de Maquinaria */
         .info-grid {
             border: 2px solid var(--border-color);
             padding: 8px 12px;
@@ -139,7 +145,6 @@
             font-size: 11px;
         }
 
-        /* Tabla Principal de Puntos a Chequear */
         .checklist-table {
             width: 100%;
             border-collapse: collapse;
@@ -177,7 +182,6 @@
             cursor: pointer;
         }
 
-        /* Botón de Captura y Previsualización de Foto */
         .photo-btn-label {
             background-color: #e0e0e0;
             color: #000;
@@ -205,7 +209,6 @@
             cursor: pointer;
         }
 
-        /* Firmas en el Dorso */
         .signatures-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -230,7 +233,6 @@
             cursor: crosshair;
         }
 
-        /* Galería de Fotos del Anexo */
         .photos-appendix {
             margin-top: 15px;
             border: 2px solid var(--border-color);
@@ -264,7 +266,6 @@
             border: 1px solid #ddd;
         }
 
-        /* Botones de Acción Flotantes */
         .action-bar {
             position: fixed;
             bottom: 15px;
@@ -286,11 +287,14 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
+        .btn-save {
+            background-color: #0275d8;
+        }
+
         .btn-clear {
             background-color: #c9302c;
         }
 
-        /* Visor Modal de Fotos */
         .modal {
             display: none;
             position: fixed;
@@ -305,6 +309,7 @@
 
         @media print {
             body { background: white; padding: 0; }
+            .history-panel { display: none !important; }
             .paper-page { box-shadow: none; max-width: 100%; padding: 0; margin-bottom: 0; }
             .action-bar, .photo-btn-label { display: none !important; }
             .sig-canvas { border: none; }
@@ -314,17 +319,28 @@
 </head>
 <body>
 
+    <!-- Panel Superior de Historial y Búsqueda -->
+    <div class="history-panel">
+        <div>
+            <strong>📁 Archivo:</strong>
+        </div>
+        <select id="select-historial" onchange="cargarFichaSeleccionada(this.value)">
+            <option value="">-- Seleccionar ficha guardada --</option>
+        </select>
+        <button class="btn btn-save" onclick="guardarFichaActual()">💾 Guardar Ficha</button>
+        <button class="btn btn-clear" onclick="borrarFichaActual()" style="padding: 10px 12px; font-size: 12px;">🗑️ Eliminar</button>
+    </div>
+
     <div class="action-bar">
-        <button class="btn btn-clear" onclick="limpiarFormulario()">Limpiar Formulario</button>
+        <button class="btn btn-clear" onclick="limpiarFormulario()">Nuevo / Limpiar</button>
         <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
     </div>
 
     <!-- PÁGINA 1 -->
     <div class="paper-page">
-        <!-- Matrícula arriba a la izquierda como en el original -->
         <div class="top-matricula-line">
             <label>MATRÍCULA:</label>
-            <input type="text" id="matricula" placeholder="E-0000-XXX">
+            <input type="text" id="matricula" placeholder="E-0000-XXX" onblur="buscarPorMatricula(this.value)">
         </div>
 
         <table class="header-table">
@@ -333,11 +349,7 @@
                     <img src="logo.png" alt="Grupo Tragsa" id="img-logo">
                 </td>
                 <td class="title-cell">
-                    CHECK-LIST RECEPCIÓN<br>DE MAQUINARIA
-                </td>
-                <td class="code-cell">
-                    <div><strong>Nº REGISTRO:</strong> <input type="text" id="reg_num"></div>
-                    <div style="margin-top:4px;"><strong>CÓDIGO:</strong> <input type="text" id="reg_cod"></div>
+                    CHECK-LIST RECEPCIÓN DE MAQUINARIA
                 </td>
             </tr>
         </table>
@@ -417,16 +429,9 @@
 
     <script>
         const conceptos = [
-            "LUZ ROTATIVA",
-            "CINTURÓN DE SEGURIDAD",
-            "ESPEJOS RETROVISORES",
-            "ALARMA ACÚSTICA DE MARCHA ATRÁS",
-            "BOCINA-CLAXON",
-            "EMISORA",
-            "EXTINTOR",
-            "ESTADO INTERIOR DE LA CABINA",
-            "ESTADO DE LUNAS Y CRISTALES",
-            "GOLPES Y ABOLLADURAS",
+            "LUZ ROTATIVA", "CINTURÓN DE SEGURIDAD", "ESPEJOS RETROVISORES",
+            "ALARMA ACÚSTICA DE MARCHA ATRÁS", "BOCINA-CLAXON", "EMISORA", "EXTINTOR",
+            "ESTADO INTERIOR DE LA CABINA", "ESTADO DE LUNAS Y CRISTALES", "GOLPES Y ABOLLADURAS",
             "FUNCIONAMIENTO DE TODOS LOS TESTIGOS DEL CUADRO DE INSTRUMENTOS",
             "FUNCIONAMIENTO DE TODOS LOS CONTROLES DE OPERACIÓN DE LA MÁQUINA DEL PUESTO DE OPERACIÓN",
             "Estado de las cubiertas / orugas: ORUGAS",
@@ -434,18 +439,15 @@
             "Estado de las cubiertas / orugas: NEUMÁTICO DELANTERO IZQUIERDO",
             "Estado de las cubiertas / orugas: NEUMÁTICO TRASERO DERECHO",
             "Estado de las cubiertas / orugas: NEUMÁTICO TRASERO IZQUIERDO",
-            "FUNCIONAMIENTO DE LAS LUCES E INDICADORES",
-            "AIRE ACONDICIONADO",
+            "FUNCIONAMIENTO DE LAS LUCES E INDICADORES", "AIRE ACONDICIONADO",
             "Documentación máquina: MANUAL DEL OPERADOR",
             "Documentación máquina: HOJA DE CONTROL DE ÚLTIMOS MANTENIMIENTOS",
             "INEXISTENCIA DE PÉRDIDAS DE FLUIDOS EN MÁQUINA (En caso de existir pérdidas, indicar componente)",
-            "NIVELES: NIVEL DE ACEITE MOTOR",
-            "NIVELES: NIVEL DE REFRIGERANTE",
-            "NIVELES: NIVEL DE ACEITE HIDRÁULICO",
-            "OTROS: DIENTES Y PROTECCIONES DEL CAZO",
-            "OTROS: CAZO"
+            "NIVELES: NIVEL DE ACEITE MOTOR", "NIVELES: NIVEL DE REFRIGERANTE",
+            "NIVELES: NIVEL DE ACEITE HIDRÁULICO", "OTROS: DIENTES Y PROTECCIONES DEL CAZO", "OTROS: CAZO"
         ];
 
+        let fichaActualId = null;
         const tbody = document.getElementById("checklist-body");
 
         conceptos.forEach((concepto, idx) => {
@@ -474,7 +476,7 @@
             if (current.checked) {
                 document.getElementsByName(oppositeName)[0].checked = false;
             }
-            guardarEstadoLocal();
+            guardarBorradorAuto();
         }
 
         function procesarFoto(event, idx) {
@@ -508,7 +510,7 @@
                         prevImg.style.display = 'block';
                         
                         actualizarGaleria();
-                        guardarEstadoLocal();
+                        guardarBorradorAuto();
                     };
                     img.src = e.target.result;
                 };
@@ -566,7 +568,7 @@
 
             function stop() {
                 dibujando = false;
-                guardarEstadoLocal();
+                guardarBorradorAuto();
             }
 
             function getPos(e) {
@@ -579,7 +581,6 @@
             canvas.addEventListener("mousedown", start);
             canvas.addEventListener("mousemove", move);
             canvas.addEventListener("mouseup", stop);
-
             canvas.addEventListener("touchstart", start, {passive: true});
             canvas.addEventListener("touchmove", move, {passive: true});
             canvas.addEventListener("touchend", stop);
@@ -588,7 +589,7 @@
         initCanvasFirma("canvas-firma-1");
         initCanvasFirma("canvas-firma-2");
 
-        function guardarEstadoLocal() {
+        function obtenerDatosFormulario() {
             const data = {};
             document.querySelectorAll("input[type=text], textarea").forEach(el => {
                 if (el.id) data[el.id] = el.value;
@@ -600,43 +601,167 @@
                 const prev = document.getElementById(`prev_${idx}`);
                 if (prev && prev.src && prev.style.display !== 'none') data[`photo_${idx}`] = prev.src;
             });
-            localStorage.setItem("tragsa_checklist_draft", JSON.stringify(data));
+            const c1 = document.getElementById("canvas-firma-1");
+            const c2 = document.getElementById("canvas-firma-2");
+            data['firma_1'] = c1.toDataURL();
+            data['firma_2'] = c2.toDataURL();
+            return data;
         }
 
-        function cargarEstadoLocal() {
-            const saved = localStorage.getItem("tragsa_checklist_draft");
-            if (!saved) {
-                actualizarGaleria();
-                return;
-            }
-            const data = JSON.parse(saved);
-            Object.keys(data).forEach(key => {
-                if (key.startsWith("photo_")) {
-                    const idx = key.split("_")[1];
-                    const prev = document.getElementById(`prev_${idx}`);
-                    if (prev && data[key]) {
-                        prev.src = data[key];
-                        prev.style.display = "block";
-                    }
-                } else {
+        // CARGAR ÚNICAMENTE TIPO, MARCA/MODELO Y BASTIDOR (Y DEMÁS DATOS DE IDENTIFICACIÓN)
+        function cargarDatosIdentificacion(data) {
+            limpiarCamposPantalla(false);
+            
+            const camposIdentificacion = ['matricula', 'tipo_maq', 'num_tragsa', 'marca_modelo', 'num_bastidor', 'cuentahoras', 'procedencia', 'obra_destino'];
+            
+            camposIdentificacion.forEach(key => {
+                if (data[key] !== undefined) {
                     const elInput = document.getElementById(key);
-                    const elChk = document.getElementsByName(key)[0];
                     if (elInput) elInput.value = data[key];
-                    if (elChk) elChk.checked = data[key];
                 }
             });
+
             actualizarGaleria();
         }
 
-        function limpiarFormulario() {
-            if (confirm("¿Estás seguro de que deseas borrar todo el formulario y las fotos cargadas?")) {
-                localStorage.removeItem("tragsa_checklist_draft");
-                window.location.reload();
+        function guardarBorradorAuto() {
+            const data = obtenerDatosFormulario();
+            localStorage.setItem("tragsa_checklist_draft", JSON.stringify(data));
+        }
+
+        function guardarFichaActual() {
+            const matricula = document.getElementById("matricula").value.trim().toUpperCase() || "SIN-MATRICULA";
+            const tipo = document.getElementById("tipo_maq").value.trim() || "Maquinaria";
+            const fechaHora = new Date().toLocaleString();
+            const nombreFicha = `${matricula} - ${tipo} (${fechaHora})`;
+
+            const id = fichaActualId || 'mat_' + matricula.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Date.now();
+            fichaActualId = id;
+
+            const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
+            historial[id] = {
+                matricula: matricula,
+                nombre: nombreFicha,
+                datos: obtenerDatosFormulario()
+            };
+
+            localStorage.setItem("tragsa_historial_fichas", JSON.stringify(historial));
+            actualizarSelectHistorial(id);
+            alert(`¡Ficha de la matrícula ${matricula} guardada correctamente!`);
+        }
+
+        function buscarPorMatricula(matriculaBuscada) {
+            const mat = matriculaBuscada.trim().toUpperCase();
+            if (!mat) return;
+
+            const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
+            let encontradaId = null;
+            Object.keys(historial).forEach(id => {
+                if (historial[id].matricula === mat) {
+                    encontradaId = id;
+                }
+            });
+
+            if (encontradaId) {
+                if (confirm(`Se han encontrado datos para la matrícula "${mat}". ¿Desea autocompletar el Tipo de Máquina, Marca/Modelo y Nº de Bastidor?`)) {
+                    fichaActualId = encontradaId;
+                    cargarDatosIdentificacion(historial[encontradaId].datos);
+                    document.getElementById("select-historial").value = encontradaId;
+                }
             }
         }
 
-        document.addEventListener("input", guardarEstadoLocal);
-        window.onload = cargarEstadoLocal;
+        function actualizarSelectHistorial(seleccionarId = null) {
+            const select = document.getElementById("select-historial");
+            select.innerHTML = '<option value="">-- Seleccionar ficha guardada --</option>';
+            const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
+
+            Object.keys(historial).forEach(id => {
+                const opt = document.createElement("option");
+                opt.value = id;
+                opt.textContent = historial[id].nombre;
+                if (id === seleccionarId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function cargarFichaSeleccionada(id) {
+            if (!id) return;
+            const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
+            if (historial[id]) {
+                fichaActualId = id;
+                cargarDatosIdentificacion(historial[id].datos);
+            }
+        }
+
+        function borrarFichaActual() {
+            if (!fichaActualId) {
+                alert("Selecciona una ficha guardada o carga una matrícula para eliminar.");
+                return;
+            }
+            if (confirm("¿Estás seguro de eliminar esta ficha guardada del historial?")) {
+                const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
+                delete historial[fichaActualId];
+                fichaActualId = null;
+                actualizarSelectHistorial();
+                limpiarFormulario();
+            }
+        }
+
+        function limpiarCamposPantalla(pedirConfirmacion = true) {
+            if (!pedirConfirmacion || confirm("¿Deseas vaciar el formulario actual?")) {
+                fichaActualId = null;
+                document.querySelectorAll("input[type=text], textarea").forEach(el => el.value = "");
+                document.querySelectorAll("input[type=checkbox]").forEach(el => el.checked = false);
+                conceptos.forEach((_, idx) => {
+                    const prev = document.getElementById(`prev_${idx}`);
+                    if (prev) { prev.src = ""; prev.style.display = "none"; }
+                });
+                ["canvas-firma-1", "canvas-firma-2"].forEach(cid => {
+                    const c = document.getElementById(cid);
+                    c.getContext("2d").clearRect(0, 0, c.width, c.height);
+                });
+                document.getElementById("select-historial").value = "";
+                actualizarGaleria();
+                localStorage.removeItem("tragsa_checklist_draft");
+            }
+        }
+
+        function limpiarFormulario() {
+            limpiarCamposPantalla(true);
+        }
+
+        document.addEventListener("input", guardarBorradorAuto);
+
+        window.onload = function() {
+            actualizarSelectHistorial();
+            const savedDraft = localStorage.getItem("tragsa_checklist_draft");
+            if (savedDraft) {
+                try { 
+                    const data = JSON.parse(savedDraft);
+                    Object.keys(data).forEach(key => {
+                        if (key.startsWith("photo_")) {
+                            const idx = key.split("_")[1];
+                            const prev = document.getElementById(`prev_${idx}`);
+                            if (prev && data[key]) { prev.src = data[key]; prev.style.display = "block"; }
+                        } else if (key === 'firma_1' || key === 'firma_2') {
+                            const canvasId = key === 'firma_1' ? 'canvas-firma-1' : 'canvas-firma-2';
+                            const canvas = document.getElementById(canvasId);
+                            const ctx = canvas.getContext("2d");
+                            const img = new Image();
+                            img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img, 0, 0); };
+                            img.src = data[key];
+                        } else {
+                            const elInput = document.getElementById(key);
+                            const elChk = document.getElementsByName(key)[0];
+                            if (elInput) elInput.value = data[key];
+                            if (elChk) elChk.checked = data[key];
+                        }
+                    });
+                    actualizarGaleria();
+                } catch(e) {}
+            }
+        };
     </script>
 </body>
 </html>
