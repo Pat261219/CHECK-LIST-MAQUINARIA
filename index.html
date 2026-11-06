@@ -24,35 +24,10 @@
         body {
             background-color: #525659;
             margin: 0;
-            padding: 20px 10px;
+            padding: 20px 10px 90px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-
-        /* Panel de Historial y Búsqueda por Matrícula */
-        .history-panel {
-            background: #fff;
-            width: 100%;
-            max-width: 850px;
-            padding: 12px 20px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.3);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .history-panel select {
-            padding: 6px;
-            font-size: 12px;
-            flex-grow: 1;
-            max-width: 350px;
-            border: 1px solid #777;
-            border-radius: 4px;
         }
 
         .paper-page {
@@ -268,32 +243,45 @@
 
         .action-bar {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(30, 30, 30, 0.95);
+            padding: 10px 15px;
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
             z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.4);
+        }
+
+        .action-bar select {
+            padding: 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 1px solid #777;
+            max-width: 260px;
+            background: #fff;
         }
 
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 18px;
-            font-size: 14px;
+            padding: 8px 14px;
+            font-size: 13px;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .btn-save {
-            background-color: #0275d8;
-        }
-
-        .btn-clear {
-            background-color: #c9302c;
-        }
+        .btn-save { background-color: #0275d8; }
+        .btn-delete { background-color: #d9534f; }
+        .btn-clear { background-color: #f0ad4e; color: #000; }
+        .btn-print { background-color: #005a36; }
 
         .modal {
             display: none;
@@ -309,9 +297,9 @@
 
         @media print {
             body { background: white; padding: 0; }
-            .history-panel { display: none !important; }
             .paper-page { box-shadow: none; max-width: 100%; padding: 0; margin-bottom: 0; }
-            .action-bar, .photo-btn-label { display: none !important; }
+            .action-bar { display: none !important; }
+            .photo-btn-label { display: none !important; }
             .sig-canvas { border: none; }
             input, textarea { border: none !important; }
         }
@@ -319,21 +307,14 @@
 </head>
 <body>
 
-    <!-- Panel Superior de Historial y Búsqueda -->
-    <div class="history-panel">
-        <div>
-            <strong>📁 Archivo:</strong>
-        </div>
-        <select id="select-historial" onchange="cargarFichaSeleccionada(this.value)">
-            <option value="">-- Seleccionar ficha guardada --</option>
-        </select>
-        <button class="btn btn-save" onclick="guardarFichaActual()">💾 Guardar Ficha</button>
-        <button class="btn btn-clear" onclick="borrarFichaActual()" style="padding: 10px 12px; font-size: 12px;">🗑️ Eliminar</button>
-    </div>
-
     <div class="action-bar">
-        <button class="btn btn-clear" onclick="limpiarFormulario()">Nuevo / Limpiar</button>
-        <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+        <select id="select-historial" onchange="cargarFichaSeleccionada(this.value)">
+            <option value="">📁 Recuperar ficha guardada...</option>
+        </select>
+        <button class="btn btn-save" onclick="guardarFichaActual()">💾 Guardar</button>
+        <button class="btn btn-delete" onclick="borrarFichaActual()">🗑️ Borrar</button>
+        <button class="btn btn-clear" onclick="limpiarFormulario()">🔄 Nuevo</button>
+        <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
     </div>
 
     <!-- PÁGINA 1 -->
@@ -610,7 +591,7 @@
 
         function cargarDatosIdentificacion(data) {
             limpiarCamposPantalla(false);
-            const camposRequeridos = ['matricula', 'tipo_maq', 'marca_modelo', 'num_bastidor'];
+            const camposRequeridos = ['matricula', 'tipo_maq', 'num_tragsa', 'marca_modelo', 'num_bastidor', 'cuentahoras', 'procedencia', 'obra_destino'];
             camposRequeridos.forEach(key => {
                 if (data[key] !== undefined) {
                     const elInput = document.getElementById(key);
@@ -643,7 +624,7 @@
 
             localStorage.setItem("tragsa_historial_fichas", JSON.stringify(historial));
             actualizarSelectHistorial(id);
-            alert(`¡Ficha de la matrícula ${matricula} guardada correctamente!`);
+            alert(`💾 ¡Ficha de la matrícula ${matricula} guardada correctamente!`);
         }
 
         function buscarPorMatricula(matriculaBuscada) {
@@ -659,7 +640,7 @@
             });
 
             if (encontradaId) {
-                if (confirm(`Se han encontrado datos para la matrícula "${mat}". ¿Desea autocompletar el Tipo de Máquina, Marca/Modelo y Nº de Bastidor?`)) {
+                if (confirm(`Se han encontrado datos previos para la matrícula "${mat}". ¿Desea autocompletar los datos de identificación de la máquina?`)) {
                     fichaActualId = encontradaId;
                     cargarDatosIdentificacion(historial[encontradaId].datos);
                     document.getElementById("select-historial").value = encontradaId;
@@ -669,7 +650,7 @@
 
         function actualizarSelectHistorial(seleccionarId = null) {
             const select = document.getElementById("select-historial");
-            select.innerHTML = '<option value="">-- Seleccionar ficha guardada --</option>';
+            select.innerHTML = '<option value="">📁 Recuperar ficha guardada...</option>';
             const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
 
             Object.keys(historial).forEach(id => {
@@ -692,12 +673,13 @@
 
         function borrarFichaActual() {
             if (!fichaActualId) {
-                alert("Selecciona una ficha guardada o carga una matrícula para eliminar.");
+                alert("Selecciona una ficha en el menú desplegable inferior para eliminar.");
                 return;
             }
-            if (confirm("¿Estás seguro de eliminar esta ficha guardada del historial?")) {
+            if (confirm("🗑️ ¿Estás seguro de eliminar esta ficha guardada del historial?")) {
                 const historial = JSON.parse(localStorage.getItem("tragsa_historial_fichas") || "{}");
                 delete historial[fichaActualId];
+                localStorage.setItem("tragsa_historial_fichas", JSON.stringify(historial));
                 fichaActualId = null;
                 actualizarSelectHistorial();
                 limpiarFormulario();
@@ -705,7 +687,7 @@
         }
 
         function limpiarCamposPantalla(pedirConfirmacion = true) {
-            if (!pedirConfirmacion || confirm("¿Deseas vaciar el formulario actual?")) {
+            if (!pedirConfirmacion || confirm("🔄 ¿Deseas vaciar el formulario actual?")) {
                 fichaActualId = null;
                 document.querySelectorAll("input[type=text], textarea").forEach(el => el.value = "");
                 document.querySelectorAll("input[type=checkbox]").forEach(el => el.checked = false);
